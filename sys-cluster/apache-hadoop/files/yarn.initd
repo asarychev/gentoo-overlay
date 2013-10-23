@@ -1,0 +1,43 @@
+#!/sbin/runscript
+# Copyright 1999-2011 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /var/cvsroot/gentoo-x86/net-misc/openssh/files/sshd.rc6.3,v 1.2 2011/09/14 21:46:19 polynomial-c Exp $
+
+#extra_commands="checkconfig gen_keys"
+#extra_started_commands="reload"
+
+depend() {
+	use logger dns
+	need net
+}
+
+YARN_USER=${YARN_USER:-mapred}
+YARN_GROUP=${YARN_GROUP:-hadoop}
+confdir="/etc/hadoop"
+script="${HADOOP_HOME}/bin/yarn"
+command="${SVCNAME#*.}"
+logdir="/var/log/hadoop"
+PIDFILE="/var/run/${SVCNAME}.pid"
+YARN_OPTS=""
+JAVA_HOME=${JAVA_HOME:-$(java-config -o)}
+
+start() {
+	ebegin "Starting ${SVCNAME}"
+	start-stop-daemon -v --start --exec "${script}" \
+	    --background --pidfile "${PIDFILE}" --make-pidfile \
+	    --stdout "${logdir}/${SVCNAME}.out" \
+	    --stderr "${logdir}/${SVCNAME}.err" \
+	    --user ${YARN_USER} --group ${YARN_GROUP} \
+	    --env JAVA_HOME=${JAVA_HOME} \
+	    --wait 5000 \
+	    -- --config "${confdir}" "${command}" ${YARN_OPTS}
+
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping ${SVCNAME}"
+	start-stop-daemon --stop --exec "${exe}" \
+	    --pidfile "${PIDFILE}" --quiet
+	eend $?
+}
