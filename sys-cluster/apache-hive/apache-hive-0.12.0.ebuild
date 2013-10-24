@@ -14,7 +14,7 @@ LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~amd64"
 RESTRICT="mirror"
-IUSE="+snappy +native"
+IUSE=""
 
 DEPEND=">=virtual/jdk-1.6
 	>=dev-libs/protobuf-2.5.0
@@ -30,7 +30,7 @@ pkg_preinst() {
 }
 
 EANT_BUILD_TARGET="package"
-EANT_EXTRA_ARGS="-Dbuild.sysclasspath=last package"
+EANT_EXTRA_ARGS="-Dbuild.sysclasspath=last"
 
 src_install() {
 	insinto "/opt/hive-${PV}"
