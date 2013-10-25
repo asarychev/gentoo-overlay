@@ -14,7 +14,7 @@ LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~amd64"
 RESTRICT="mirror"
-IUSE="+examples"
+IUSE="examples"
 
 DEPEND=">=virtual/jdk-1.6
 	>=dev-libs/protobuf-2.5.0
