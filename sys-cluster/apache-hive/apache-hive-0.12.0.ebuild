@@ -26,6 +26,7 @@ RDEPEND=">=virtual/jre-1.6"
 S="${WORKDIR}/hive-${PV}/src"
 
 pkg_preinst() {
+	enewgroup hive
 	enewuser hive -1 /bin/bash /var/lib/hive hive
 }
 
