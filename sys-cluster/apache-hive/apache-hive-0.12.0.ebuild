@@ -14,7 +14,7 @@ LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~amd64"
 RESTRICT="mirror"
-IUSE=""
+IUSE="+examples"
 
 DEPEND=">=virtual/jdk-1.6
 	>=dev-libs/protobuf-2.5.0
@@ -33,7 +33,33 @@ pkg_preinst() {
 EANT_BUILD_TARGET="package"
 EANT_EXTRA_ARGS="-Dbuild.sysclasspath=last"
 
+_do_all_exe() {
+	local f t
+	local dir=$1
+	shift
+
+	for f in "$@" ; do
+		local ff=$(basename ${f})
+
+		if [[ -d ${f} ]] ; then
+			_do_all_exe "${dir}/${ff}" "${f}/"*
+		else
+			exeinto ${dir}
+			doexe "${f}"
+		fi
+	done
+}
+
 src_install() {
+
 	insinto "/opt/hive-${PV}"
-	doins -r "${S}/build/dist/"*
+	doins -r "${S}/build/dist/"{LICENSE,NOTICE,README.txt,RELEASE_NOTES.txt,conf,scripts}
+	use examples && doins -r "${S}/build/dist/examples"
+
+	_do_all_exe "/opt/hive-${PV}" "${S}/build/dist/bin"
+
+	insinto "/opt/hive-${PV}/hcatalog"
+	doins -r "${S}/build/dist/hcatalog/"{etc,share}
+
+	_do_all_exe "/opt/hive-${PV}/hcatalog" "${S}/build/dist/hcatalog/"{bin,libexec,sbin}
 }
