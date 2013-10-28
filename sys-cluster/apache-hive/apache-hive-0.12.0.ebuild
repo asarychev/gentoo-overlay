@@ -53,7 +53,7 @@ _do_all_exe() {
 src_install() {
 
 	insinto "/opt/hive-${PV}"
-	doins -r "${S}/build/dist/"{LICENSE,NOTICE,README.txt,RELEASE_NOTES.txt,conf,scripts}
+	doins -r "${S}/build/dist/"{LICENSE,NOTICE,README.txt,RELEASE_NOTES.txt,conf,lib,scripts}
 	use examples && doins -r "${S}/build/dist/examples"
 
 	_do_all_exe "/opt/hive-${PV}" "${S}/build/dist/bin"
@@ -62,4 +62,15 @@ src_install() {
 	doins -r "${S}/build/dist/hcatalog/"{etc,share}
 
 	_do_all_exe "/opt/hive-${PV}/hcatalog" "${S}/build/dist/hcatalog/"{bin,libexec,sbin}
+
+	# Install sample config files.
+	insinto /etc/hive
+	doins "${S}/build/dist/conf/"*
+
+	dodir "/etc/env.d"
+	cat > "${ED}/etc/env.d/35apache-hive" <<- EOF
+	HIVE_CONF_DIR="${EROOT}etc/hive"
+	HIVE_HOME="${EROOT}opt/hive-${PV}"
+	PATH="${EROOT}opt/hive-${PV}/bin"
+	EOF
 }
