@@ -31,7 +31,7 @@ DEPEND=">=virtual/jdk-1.6
 
 RDEPEND=">=virtual/jre-1.6
 	${_common_deps}
-	>=sys-cluster/apache-hadoop-common-2.2[native?,snappy?]
+	>=sys-cluster/apache-hadoop-yarn-2.2[native?,snappy?]
 	"
 
 S=${WORKDIR}/hadoop-${MY_PV}-src/hadoop-mapreduce-project
