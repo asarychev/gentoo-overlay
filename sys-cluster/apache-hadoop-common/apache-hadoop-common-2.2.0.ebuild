@@ -70,11 +70,13 @@ src_install() {
 	dodir "/etc/env.d"
 	cat > "${ED}/etc/env.d/30apache-common" <<- EOF || die
 	HADOOP_COMMON_HOME="${EROOT}${INSTALL_DIR}"
-	HADOOP_COMMON_CONF_DIR="${EROOT}etc/hadoop"
+	HADOOP_CONF_DIR="${EROOT}etc/hadoop"
 	PATH="${EROOT}${INSTALL_DIR}/bin"
+	CONFIG_PROTECT="${EROOT}${INSTALL_DIR}/etc/hadoop"
 	EOF
 
 	# Install basic config files.
 	insinto /etc/hadoop
-	doins "${FILESDIR}/hadoop-cfg/"*
+	doins "${ED}${INSTALL_DIR}/etc/hadoop"/{*.properties,hadoop-env.sh}
+	doins "${FILESDIR}/hadoop-cfg"/*
 }
