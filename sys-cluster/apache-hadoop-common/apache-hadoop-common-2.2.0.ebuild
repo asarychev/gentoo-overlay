@@ -68,7 +68,7 @@ src_install() {
 	find "${ED}${INSTALL_DIR}" -name '*.cmd' -exec rm '{}' + || die
 
 	dodir "/etc/env.d"
-	cat > "${ED}/etc/env.d/30apache-common" <<- EOF || die
+	cat > "${ED}/etc/env.d/30apache-hadoop-common" <<- EOF || die
 	HADOOP_COMMON_HOME="${EROOT}${INSTALL_DIR}"
 	HADOOP_CONF_DIR="${EROOT}etc/hadoop"
 	PATH="${EROOT}${INSTALL_DIR}/bin"
