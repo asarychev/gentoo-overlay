@@ -18,15 +18,19 @@ KEYWORDS="~amd64"
 RESTRICT="mirror"
 IUSE="+snappy +native"
 
+_common_deps="
+	native? ( >=dev-libs/protobuf-2.5.0 dev-util/cmake )
+	snappy? ( app-arch/snappy )
+	"
 DEPEND=">=virtual/jdk-1.6
 	>=dev-java/maven-bin-3.0
-	>=dev-libs/protobuf-2.5.0
-	dev-util/cmake
 	dev-java/ant
-	app-arch/snappy
+	${_common_deps}
 	"
 
-RDEPEND=">=virtual/jre-1.6"
+RDEPEND=">=virtual/jre-1.6
+	${_common_deps}
+	"
 
 S=${WORKDIR}/hadoop-${MY_PV}-src/hadoop-common-project
 INSTALL_DIR="opt/apache-hadoop/common-${MY_PV}"	# relative to ${EROOT}
@@ -47,12 +51,6 @@ pkg_setup() {
 
 }
 
-pkg_preinst() {
-	enewgroup hadoop
-	enewuser hdfs -1 /bin/bash /var/lib/hadoop/hdfs hadoop
-	enewuser mapred -1 /bin/bash /var/lib/hadoop/mapred hadoop
-}
-
 src_compile() {
 	local cmd="mvn --settings ${T}/maven/settings.xml package -Pdist$(usex native ",native" "") -Dtar $(usex snappy "-Drequire.snappy" "") -DskipTests"
 	einfo ${cmd}
@@ -60,8 +58,11 @@ src_compile() {
 }
 
 src_install() {
-	cp -r --no-target-directory "hadoop-common/target/hadoop-common-${MY_PV}" "${ED}${INSTALL_DIR}" || die
-	cp -r --no-target-directory "hadoop-nfs/target/hadoop-nfs-${MY_PV}" "${ED}${INSTALL_DIR}" || die
+	dodir "/${INSTALL_DIR}"
+
+	# Using cp to preserve all executable files
+	cp -r "hadoop-common/target/hadoop-common-${MY_PV}"/* "${ED}${INSTALL_DIR}/" || die
+	cp -r "hadoop-nfs/target/hadoop-nfs-${MY_PV}"/* "${ED}${INSTALL_DIR}/" || die
 
 	# Get rid of windows .cmd files.
 	find "${ED}${INSTALL_DIR}" -name '*.cmd' -exec rm '{}' + || die
