@@ -14,7 +14,7 @@ depend() {
 YARN_USER=${YARN_USER:-mapred}
 YARN_GROUP=${YARN_GROUP:-hadoop}
 confdir="/etc/hadoop"
-script="${HADOOP_HOME}/bin/yarn"
+script="${HADOOP_YARN_HOME}/bin/yarn"
 command="${SVCNAME#*.}"
 logdir="/var/log/hadoop"
 PIDFILE="/var/run/${SVCNAME}.pid"
