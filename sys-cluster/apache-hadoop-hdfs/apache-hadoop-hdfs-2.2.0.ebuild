@@ -80,7 +80,7 @@ src_install() {
 	dodir "/etc/env.d"
 	cat > "${ED}/etc/env.d/33apache-hadoop-hdfs" <<- EOF
 	HADOOP_HDFS_HOME="${EROOT}${INSTALL_DIR}"
-	PATH="${EROOT}${INSTALL_DIR}/bin"
+	#PATH="${EROOT}${INSTALL_DIR}/bin"	# uncomment if desired.
 	CONFIG_PROTECT="${EROOT}${INSTALL_DIR}/etc/hadoop"
 	EOF
 
