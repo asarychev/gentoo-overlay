@@ -18,15 +18,21 @@ KEYWORDS="~amd64"
 RESTRICT="mirror"
 IUSE="+snappy +native"
 
-DEPEND=">=virtual/jdk-1.6
-	>=dev-java/maven-bin-3.0
-	>=dev-libs/protobuf-2.5.0
-	dev-util/cmake
-	dev-java/ant
-	app-arch/snappy
+_common_deps="
+	native? ( >=dev-libs/protobuf-2.5.0 dev-util/cmake )
+	snappy? ( app-arch/snappy )
 	"
 
-RDEPEND=">=virtual/jre-1.6"
+DEPEND=">=virtual/jdk-1.6
+	>=dev-java/maven-bin-3.0
+	dev-java/ant
+	${_common_deps}
+	"
+
+RDEPEND=">=virtual/jre-1.6
+	${_common_deps}
+	>=sys-cluster/apache-hadoop-common-2.2[native?,snappy?]
+	"
 
 S=${WORKDIR}/hadoop-${MY_PV}-src/hadoop-hdfs-project
 INSTALL_DIR="opt/apache-hadoop/hdfs-${MY_PV}"	# relative to ${EROOT}
@@ -63,16 +69,19 @@ src_install() {
 
 	insinto "/${INSTALL_DIR}"
 
-	doins -r "hadoop-hdfs/target/hadoop-hdfs-${MY_PV}/"*
-	doins -r "hadoop-hdfs-httpfs/target/hadoop-hdfs-httpfs-${MY_PV}/"*
-	doins -r "hadoop-hdfs-nfs/target/hadoop-hdfs-nfs-${MY_PV}/"*
+	# Using cp to preserve all executable files
+	cp -r "hadoop-hdfs/target/hadoop-hdfs-${MY_PV}/"* "${ED}${INSTALL_DIR}/" || die
+	cp -r "hadoop-hdfs-httpfs/target/hadoop-hdfs-httpfs-${MY_PV}/"* "${ED}${INSTALL_DIR}/" || die
+	cp -r "hadoop-hdfs-nfs/target/hadoop-hdfs-nfs-${MY_PV}/"* "${ED}${INSTALL_DIR}/" || die
 
 	# Get rid of windows .cmd files.
 	find "${ED}${INSTALL_DIR}" -name '*.cmd' -exec rm '{}' +
 
 	dodir "/etc/env.d"
 	cat > "${ED}/etc/env.d/33apache-hadoop-hdfs" <<- EOF
+	HADOOP_HDFS_HOME="${EROOT}${INSTALL_DIR}"
 	PATH="${EROOT}${INSTALL_DIR}/bin"
+	CONFIG_PROTECT="${EROOT}${INSTALL_DIR}/etc/hadoop"
 	EOF
 
 	# init.d files

@@ -14,7 +14,7 @@ depend() {
 HDFS_USER=${HDFS_USER:-hdfs}
 HDFS_GROUP=${HDFS_GROUP:-hadoop}
 confdir="/etc/hadoop"
-script="${HADOOP_HOME}/bin/hdfs"
+script="${HADOOP_HDFS_HOME}/bin/hdfs"
 command="${SVCNAME#*.}"
 logdir="/var/log/hadoop"
 PIDFILE="/var/run/${SVCNAME}.pid"
@@ -43,6 +43,8 @@ start() {
 	    --stderr "${logdir}/${SVCNAME}.err" \
 	    --user ${HDFS_USER} --group ${HDFS_GROUP} \
 	    --env JAVA_HOME=${JAVA_HOME} \
+	    --env HADOOP_COMMON_HOME=${HADOOP_COMMON_HOME} \
+	    --env HADOOP_HDFS_HOME=${HADOOP_HDFS_HOME} \
 	    --wait 5000 \
 	    -- --config "${confdir}" "${command}" ${HDFS_OPTS}
 
